@@ -1,7 +1,6 @@
 package com.JDBC;
 import java.util.List;
 
-
 public class EmployeePayrollService {
     private final EmployeePayrollDBService employeePayrollDBService;
     private List<EmployeePayrollData> employeePayrollList;
@@ -15,7 +14,7 @@ public class EmployeePayrollService {
     }
 
     /**
-     * This method is for get the list of employee payroll from the database
+     * This method to get the list of employee payroll from the database
      */
     public List<EmployeePayrollData> readEmployeePayrollData(IOService ioService) {
         if(ioService.equals(IOService.DB_IO))
@@ -24,7 +23,7 @@ public class EmployeePayrollService {
     }
 
     /**
-     * This method is for update the Employee Salary in the database
+     * This method to update the Employee Salary in the database
      */
 
     public void updateEmployeeSalary(String name, double salary) throws EmployeePayrollException {
@@ -37,7 +36,19 @@ public class EmployeePayrollService {
     }
 
     /**
-     * This method check whether the EmployeePayrollData is in sync with the DB
+     * This method to update the Employee Salary in the database
+     */
+    public void updateEmployeeSalaryUsingPreparedStatement(String name, double salary) throws EmployeePayrollException {
+        int result = employeePayrollDBService.updateEmployeeDataPreparedStatement(name, salary);
+        if(result == 0)
+            return;
+        EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+        if( employeePayrollData != null )
+            employeePayrollData.salary = salary;
+    }
+
+    /**
+     * This method to check whether the EmployeePayrollData is in sync with the DB
      * Use to equals() to compare the values
      */
 
@@ -47,7 +58,7 @@ public class EmployeePayrollService {
     }
 
     /**
-     * this method is for Check the EmployeePayrollData list for the name
+     * This method to Check the EmployeePayrollData list for the name
      * If found, return the value else return null
      */
 

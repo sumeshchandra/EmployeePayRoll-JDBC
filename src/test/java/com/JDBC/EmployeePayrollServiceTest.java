@@ -34,4 +34,15 @@ public class EmployeePayrollServiceTest {
         boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
         Assert.assertTrue(result);
     }
+
+    /**
+     * This Test case to test whether the salary is updated in the database and is synced with the DB using JDBC PreparedStatement
+     */
+    @Test
+    public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDBUsingPreparedStatement() throws EmployeePayrollException {
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+        employeePayrollService.updateEmployeeSalaryUsingPreparedStatement("Bill", 150000);
+        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Bill");
+        Assert.assertTrue(result);
+    }
 }
