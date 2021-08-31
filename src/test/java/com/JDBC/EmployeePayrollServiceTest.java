@@ -9,7 +9,7 @@ public class EmployeePayrollServiceTest {
     EmployeePayrollService employeePayrollService = null;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         employeePayrollService = new EmployeePayrollService();
     }
 
@@ -19,7 +19,12 @@ public class EmployeePayrollServiceTest {
     @Test
     public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+        List<EmployeePayrollData> employeePayrollData = null;
+        try {
+            employeePayrollData = employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+        } catch (EmployeePayrollException e) {
+            e.printStackTrace();
+        }
         Assert.assertEquals(3, employeePayrollData.size());
     }
 
