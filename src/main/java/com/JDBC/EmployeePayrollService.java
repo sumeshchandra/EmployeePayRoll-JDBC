@@ -1,52 +1,60 @@
 package com.JDBC;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 public class EmployeePayrollService {
-
-    public List<EmployeePayroll> readEmployeePayrollData() {
-        return new EmployeePayrollServiceDB().readData();
-    }
-
-    List<EmployeePayroll> employeePayrolls;
+    private final EmployeePayrollDBService employeePayrollDBService;
+    private List<EmployeePayrollData> employeePayrollList;
 
     public enum IOService {
-        FILE_IO, DB_IO, CONSOLE_IO, REST_IO
+        DB_IO
     }
 
     public EmployeePayrollService() {
-
+        employeePayrollDBService = EmployeePayrollDBService.getInstance();
     }
 
-    public EmployeePayrollService(List<EmployeePayroll> employeePayrolls) {
-        // TODO Auto-generated constructor stub
-        this.employeePayrolls = employeePayrolls;
+    /**
+     * This method is for get the list of employee payroll from the database
+     */
+    public List<EmployeePayrollData> readEmployeePayrollData(IOService ioService) {
+        if(ioService.equals(IOService.DB_IO))
+            this.employeePayrollList = employeePayrollDBService.readData();
+        return this.employeePayrollList;
     }
 
-    public static void main(String[] args) {
-        List<EmployeePayroll> employeePayrolls = new ArrayList<>();
-        EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrolls);
-        Scanner consoleInputReader = new Scanner(System.in);
-        employeePayrollService.readEmployeePayroll(consoleInputReader);
-        employeePayrollService.writeEmployeePayroll();
+    /**
+     * This method is for update the Employee Salary in the database
+     */
 
+    public void updateEmployeeSalary(String name, double salary) throws EmployeePayrollException {
+        int result = employeePayrollDBService.updateEmployeeData(name, salary);
+        if(result == 0)
+            return;
+        EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+        if( employeePayrollData != null )
+            employeePayrollData.salary = salary;
     }
 
-    private void writeEmployeePayroll() {
-        System.out.println("\n Writing Employee Payroll Data \n" + employeePayrolls);
+    /**
+     * This method check whether the EmployeePayrollData is in sync with the DB
+     * Use to equals() to compare the values
+     */
+
+    public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {
+        List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
+        return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
     }
 
-    private void readEmployeePayroll(Scanner consoleInputReader) {
-        System.out.println("Enter employee id : ");
-        int id = consoleInputReader.nextInt();
-        System.out.println("Enter employee name : ");
-        consoleInputReader.nextLine();
-        String name = consoleInputReader.nextLine();
-        System.out.println("Enter employee salary : ");
-        long salary = consoleInputReader.nextLong();
-        employeePayrolls.add(new EmployeePayroll(id, name, salary));
-    }
+    /**
+     * this method is for Check the EmployeePayrollData list for the name
+     * If found, return the value else return null
+     */
 
+    private EmployeePayrollData getEmployeePayrollData(String name) {
+        return this.employeePayrollList.stream()
+                .filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name))
+                .findFirst()
+                .orElse(null);
+    }
 }
