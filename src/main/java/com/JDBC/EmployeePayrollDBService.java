@@ -3,7 +3,9 @@ package com.JDBC;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayrollDBService {
     private static EmployeePayrollDBService employeePayrollDBService;
@@ -162,5 +164,25 @@ public class EmployeePayrollDBService {
         String sql = String.format("SELECT * FROM employee_payroll2 WHERE start BETWEEN '%s' AND '%s';",
                 Date.valueOf(startDate), Date.valueOf(endDate));
         return getEmployeePayrollDataUsingDB(sql);
+    }
+
+    public Map<String, Double> getAverageSalaryByGender() {
+        String sql = "SELECT gender, AVG(salary) as avg_salary FROM employee_payroll2 GROUP BY gender;";
+        Map<String, Double> genderToAverageSalaryMap = new HashMap<>();
+        try {
+            Connection connection = this.getConnection();
+            {
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);
+                while (resultSet.next()) {
+                    String gender = resultSet.getString("gender");
+                    Double salary = resultSet.getDouble(("avg_salary"));
+                    genderToAverageSalaryMap.put(gender, salary);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return genderToAverageSalaryMap;
     }
 }
